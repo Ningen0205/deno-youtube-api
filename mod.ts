@@ -1,9 +1,14 @@
 import { YouTube } from "https://deno.land/x/youtube@v0.3.0/mod.ts";
+import { LineApi, SendBroadcastMessageRequest } from "./lineApi.ts";
 import "https://deno.land/x/dotenv/load.ts";
 
 type RecommendMovie = {
-  videoId: string;
+  id: {
+    kind: string;
+    videoId: string;
+  };
 };
+
 const fetchRecommendMovie = async (query: string): Promise<RecommendMovie> => {
   const maxResults = 10;
 
@@ -24,7 +29,36 @@ const fetchRecommendMovie = async (query: string): Promise<RecommendMovie> => {
 
 const main = async () => {
   const result = await fetchRecommendMovie("ボカロ");
-  console.log(result);
+
+  const videoUrl = generateYoutubeVideoUrl(result.id.videoId);
+
+  const request: SendBroadcastMessageRequest = {
+    messages: [
+      {
+        type: "text",
+        text: "おすすめ動画はこちら！",
+      },
+      {
+        type: "text",
+        text: videoUrl,
+      },
+    ],
+  };
+
+  const channelSecret = Deno.env.get("CHANNEL_SECRET");
+  const channelAccessToken = Deno.env.get("CHANNEL_ACCESS_TOKEN");
+
+  if (!channelSecret || !channelAccessToken) throw new Error("Token not found");
+
+  const lineApi = new LineApi(channelSecret, channelAccessToken);
+
+  const response = await lineApi.sendBroadcastMessage(request);
+  console.log(response);
+  console.log(channelSecret, channelAccessToken);
+};
+
+const generateYoutubeVideoUrl = (videoId: string) => {
+  return `https://youtube.com/watch?v=${videoId}`;
 };
 
 await main();
