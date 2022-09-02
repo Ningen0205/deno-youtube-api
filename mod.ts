@@ -53,8 +53,6 @@ const main = async () => {
   const lineApi = new LineApi(channelSecret, channelAccessToken);
 
   const response = await lineApi.sendBroadcastMessage(request);
-  console.log(response);
-  console.log(channelSecret, channelAccessToken);
 };
 
 const generateYoutubeVideoUrl = (videoId: string) => {

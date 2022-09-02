@@ -1,5 +1,3 @@
-import "https://deno.land/x/dotenv/load.ts";
-
 export type Message = {
   type: string;
   text: string;
