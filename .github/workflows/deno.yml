@@ -10,7 +10,7 @@ name: Deno
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
@@ -18,16 +18,17 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    env:
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      CHANNEL_SECRET: ${{ secrets.CHANNEL_SECRET }}
+      CHANNEL_ACCESS_TOKEN: ${{ secrets.CHANNEL_ACCESS_TOKEN }}
     steps:
       - name: Setup repo
         uses: actions/checkout@v3
 
       - name: Setup Deno
-        # uses: denoland/setup-deno@v1
         uses: denoland/setup-deno@004814556e37c54a2f6e31384c9e18e983317366
         with:
           deno-version: v1.x
-
       - name: Run script
         run: deno run --allow-all mod.ts
